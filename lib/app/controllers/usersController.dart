@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/app/models/user.dart';
+import 'package:flutter_api/app/providers/usersProviders.dart';
 import 'package:get/get.dart';
 
 class UsersController extends GetxController {
@@ -16,11 +17,19 @@ class UsersController extends GetxController {
   void add(String name, String email, String phone) {
     if (name != '' && email != '' && phone != '') {
       if (email.contains("@")) {
-        users.add(User(
-            id: DateTime.now().toString(),
-            name: name,
-            email: email,
-            phone: phone));
+        UserProviders().postData(name, email, phone).then(
+          (value) {
+            users.add(
+              User(
+                id: value.body['name'].toString(),
+                name: name,
+                email: email,
+                phone: phone,
+              ),
+            );
+          },
+        );
+
         Get.back();
       } else {
         snackBarError("Masukan Email Valid");
@@ -37,11 +46,14 @@ class UsersController extends GetxController {
   void edit(String id, String name, String email, String phone) {
     if (name != '' && email != '' && phone != '') {
       if (email.contains("@")) {
-        final user = userById(id);
-        user.name = name;
-        user.email = email;
-        user.phone = phone;
-        users.refresh();
+        UserProviders().editData(id, name, email, phone).then((value) {
+          final user = userById(id);
+          user.name = name;
+          user.email = email;
+          user.phone = phone;
+          users.refresh();
+        });
+
         Get.back();
       } else {
         snackBarError("Masukan email valid");
@@ -59,6 +71,7 @@ class UsersController extends GetxController {
         textConfirm: "Ya",
         confirmTextColor: Colors.white,
         onConfirm: () {
+          UserProviders().deleteData(id);
           users.removeWhere((element) => element.id == id);
           _delete = true;
           Get.back();

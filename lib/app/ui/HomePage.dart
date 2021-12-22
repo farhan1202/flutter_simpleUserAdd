@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_api/app/controllers/usersController.dart';
+import 'package:flutter_api/app/providers/usersProviders.dart';
 import 'package:flutter_api/app/routes/app_route.dart';
 import 'package:get/get.dart';
 
@@ -41,7 +42,9 @@ class HomePage extends StatelessWidget {
                       ),
                     )))),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
+        onPressed: () {
+          UserProviders().getDatas().then((value) => print(value.body));
+        },
         child: Icon(Icons.get_app_rounded),
       ),
     );
